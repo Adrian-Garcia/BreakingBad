@@ -16,6 +16,7 @@ public class Assets {
     public static BufferedImage player;     // to store the player image
     public static BufferedImage bad;        // to store the bad image
     public static BufferedImage pokeball;   // to store the pokemon image
+    public static BufferedImage pikachu;   // to store proyectil image
     public static BufferedImage box;        // to store collision sprite
     public static SoundClip bomb;           // to store the sound of fall
     public static SoundClip coin;           // to store the sound of catch
@@ -28,6 +29,7 @@ public class Assets {
         player = ImageLoader.loadImage("/images/Squirtle.png");
         bad = ImageLoader.loadImage("/images/pikachu.png");
         pokeball = ImageLoader.loadImage("/images/pokeball.png");
+        pikachu = ImageLoader.loadImage("/images/pikachu.png");
         box = ImageLoader.loadImage("/images/Empty.png");
 //        box = ImageLoader.loadImage("/images/box.png");
         bomb = new SoundClip("/sounds/Metal.wav");

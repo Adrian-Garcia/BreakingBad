@@ -14,12 +14,12 @@ import java.awt.Rectangle;
  */
 public class Player extends Item{
 
-    private int direction;
     private int width;
     private int height;
     private Game game;
-    public int speed;
-    public int score = 0;
+    private int speed;
+    private int vidas;
+    private int score = 0;
     
     /**
      * Player constructor
@@ -32,19 +32,10 @@ public class Player extends Item{
      */
     public Player(int x, int y, int direction, int width, int height, Game game) {
         super(x, y);
-        this.direction = direction;
         this.width = width;
         this.height = height;
         this.game = game;
-        this.speed = 1;
-    }
-
-    /**
-     * Get the direction 
-     * @return an <code>integer</code> with the direction value
-     */
-    public int getDirection() {
-        return direction;
+        this.speed = 9;
     }
 
     /**
@@ -61,14 +52,6 @@ public class Player extends Item{
      */
     public int getHeight() {
         return height;
-    }
-
-    /**
-     * Set the Direction
-     * @param direction 
-     */
-    public void setDirection(int direction) {
-        this.direction = direction;
     }
 
     /**
@@ -92,31 +75,21 @@ public class Player extends Item{
      */
     @Override
     public void tick() {
+        
         // moving player depending on flags
-        if (game.getKeyManager().up) {
-           setY(getY() - 9);
-        }
-        if (game.getKeyManager().down) {
-           setY(getY() + 9);
-        }
         if (game.getKeyManager().left) {
-           setX(getX() - 9);
+           setX(getX() - speed);
         }
         if (game.getKeyManager().right) {
-           setX(getX() + 9);
+           setX(getX() + speed);
         }
+        
         // reset x position and y position if colision
-        if (getX() + 60 >= game.getWidth()) {
-            setX(game.getWidth() - 60);
+        if (getX() + getWidth() >= game.getWidth()) {
+            setX(game.getWidth() - 10);
         }
-        else if (getX() <= -30) {
-            setX(-30);
-        }
-        if (getY() + 80 >= game.getHeight()) {
-            setY(game.getHeight() - 80);
-        }
-        else if (getY() <= -20) {
-            setY(-20);
+        else if (getX() <= 0) {
+            setX(10);
         }
     }
     

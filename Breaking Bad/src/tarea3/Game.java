@@ -6,6 +6,7 @@
 package tarea3;
 
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
 
@@ -24,14 +25,10 @@ public class Game implements Runnable {
     private Thread thread;              // thread to create the game
     private boolean running;            // to set the game
     private Player player;              // to use a player
-    private Box box;                    // to use collisions
-    private LinkedList<Bad> bads;       // to use bad guys
+    private Proyectil proyectil;        // proyectil que se usará en el juego
+    private LinkedList<Bad> camiones;   // the ammount of blocks to destroy
     private KeyManager keyManager;      // to manage the keyboard
     private MouseManager mouseManager;  // to manage the mouse
-    public int lives = 5;               // lives of the game
-    public int counter = 0;             // suportive counter of the game
-    public int score = 0;               // score of the game
-    public boolean b = false;           // to accelerate the bads
 
     /**
      * to create title, width and height and set the game is still not running
@@ -47,7 +44,6 @@ public class Game implements Runnable {
         running = false;
         keyManager = new KeyManager();
         mouseManager = new MouseManager();
-        bads = new LinkedList<Bad>();
     }
 
     /**
@@ -76,6 +72,16 @@ public class Game implements Runnable {
         this.title = title;
     }
     
+    public Rectangle2D[] getParedes(){
+        Rectangle2D[] paredes = new Rectangle2D[4];
+        int padding = 10;
+        paredes[0] = new Rectangle2D.Double(getWidth()-padding,padding,padding,getHeight()-2*padding);
+        paredes[1] = new Rectangle2D.Double(padding,0,getWidth()-2*padding,padding);
+        paredes[2] = new Rectangle2D.Double(0,padding,padding,getHeight()-2*padding);
+        paredes[3] = new Rectangle2D.Double(padding,getHeight()-padding,getWidth()-2*padding,padding);
+        return paredes;
+    }
+    
     /**
      * initializing the display window of the game
      */
@@ -83,20 +89,18 @@ public class Game implements Runnable {
         display = new Display(title, getWidth(), getHeight());
         Assets.init();
         player = new Player(0, getHeight() - 100, 1, 100, 100, this);
-        box = new Box(20, getHeight() - 100, 1, 40, 1, this);
-        display.setTitle("Lives = " + lives + "     Score = " + score);
-        //adding elements to bads
-        int iNum = (int) (Math.random() * 8 + 5);
-        for (int i = 1; i <= iNum; i++) {
-            int iPosX = (int) (Math.random() * getWidth() - 70);
-            int iPosY = (int) (Math.random() * getHeight() - 500);
-            bads.add(new Bad(iPosX, iPosY, 1, 100, 100, this));
+        proyectil = new Proyectil(50,350,DiagDirection.UPRIGHT,50,50,this);
+        
+        // creando nuestros camiones
+        camiones = new LinkedList<Bad>();
+        int camWidth = 100;
+        int camHeight = 50;
+        for (int i = 1; i <= 50; i++) {
+            int iPosX = (camWidth*i)%getWidth();
+            int iPosY = camHeight*((camHeight*i)/getWidth());
+            camiones.add(new Bad(iPosX, iPosY, 1, camWidth, camHeight, this));
         }
         display.getJframe().addKeyListener(keyManager);
-        display.getJframe().addMouseListener(mouseManager);
-        display.getJframe().addMouseMotionListener(mouseManager);
-        display.getCanvas().addMouseListener(mouseManager);
-        display.getCanvas().addMouseMotionListener(mouseManager);
     }
 
     /**
@@ -156,66 +160,43 @@ public class Game implements Runnable {
         keyManager.tick();
         // avancing player and bad with walls collision
         player.tick();
-        box.tick();
-        display.getJframe().setTitle("Lives: " + lives + "     Score: " + score);
-        //ticking the bad guys
-        for (int i = 0; i < bads.size(); i++) {
+        
+        // tickeando los camiones para animarlos
+        
+        for(Bad camion : camiones){
+            camion.tick();
             
-            Bad bad = bads.get(i);
-            
-            if (b) {
-                bad.setSpeed(bad.getSpeed() + 3);
-            }
-            
-            bad.tick();
-            // checking collition between player and bad
-            if (box.intersecta(bad)) {
-                int iPosX = (int) (Math.random() * getWidth() - 70);
-                int iPosY = (int) (Math.random() * getHeight() - 500);
-                bad.setX(iPosX);
-                bad.setY(iPosY);
-                Assets.coin.play();
-                score+=100;
-            }
-            
-            //Bad collides with the flor
-            if (bad.floor) {
+            // revisemos que este camion no esté colisionando con nuestro proyectil
+            if(proyectil.getShape().intersects(camion.getPerimetro())){
+                // hay una colisión, ¿qué hacemos?
                 
-                bad.floor = false;
-                score-=20;
-                counter++;
-                if (counter >= 10) {
-                    lives--;
-                    bad.setSpeed(bad.getSpeed()+1);
-                    counter = 0;
-                    b = true;
+                Rectangle2D[] bordes = camion.getBordes();
+                for(int i=0; i<bordes.length; i++){
+                    if(proyectil.getShape().intersects(bordes[i])){
+                        switch(i){
+                            case 2:
+                                proyectil.chocar(RectDirection.RIGHT);
+                                break;
+                            case 3:
+                                proyectil.chocar(RectDirection.UP);
+                                break;
+                            case 0:
+                                proyectil.chocar(RectDirection.LEFT);
+                                break;
+                            case 1:
+                                proyectil.chocar(RectDirection.DOWN);
+                                break;
+                        }
+                    }
                 }
                 
-                //Change Bad Position
-                int iPosX = (int) (Math.random() * getWidth() - 70);
-                int iPosY = (int) (Math.random() * getHeight() - 500);
-                bad.setX(iPosX);
-                bad.setY(iPosY);
-                
-                //If we ran out of lives, game is over
-                if (lives <= 0) {
-                    stop();
-                }
-
-                //Bomb sound
-                Assets.bomb.play();
-            }
-
-            //Bad collides with a "wall"
-            if (bad.side) {
-                bad.side = false;
-                int iPosX = (int) (Math.random() * getWidth() - 70);
-                int iPosY = (int) (Math.random() * getHeight() - 500);
-                bad.setX(iPosX);
-                bad.setY(iPosY);
+                camion.explotar();
             }
         }
-        b = false;  
+        
+        proyectil.tick();
+        
+        
     }
 
     /**
@@ -236,12 +217,12 @@ public class Game implements Runnable {
             g = bs.getDrawGraphics();
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
-            box.render(g);
 
-            for (int i = 0; i < bads.size(); i++) {
-                Bad bad = bads.get(i);
-                bad.render(g);
+            for(Bad camion : camiones){
+                camion.render(g);
             }
+            
+            proyectil.render(g);
 
             bs.show();
             g.dispose();
@@ -274,4 +255,5 @@ public class Game implements Runnable {
             }
         }
     }
+    
 }

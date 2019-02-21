@@ -7,6 +7,7 @@ package tarea3;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -102,29 +103,28 @@ public class Bad extends Item{
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    
+    public Rectangle2D[] getBordes(){
+        Rectangle2D[] bordes = new Rectangle2D[4];
+        bordes[0] = new Rectangle2D.Double(getX()+getWidth(),getY(),1,getHeight());
+        bordes[1] = new Rectangle2D.Double(getX(),getY()-1,getWidth(),1);
+        bordes[2] = new Rectangle2D.Double(getX()-1,getY(),1,getHeight());
+        bordes[3] = new Rectangle2D.Double(getX(),getY()+getHeight(),getWidth(),1);
+        return bordes;
+    }
 
     /**
      * Control bad movement
      */
     @Override
     public void tick() {
-        
-        //Goes down
-        setY(getY()+getSpeed());
-        
-        // reset x position and y position if colision
-        if (getX() + 60 >= game.getWidth()) {                   //Right
-            setX(game.getWidth() - 60);
-            side = true;
-        }
-        else if (getX() <= -30) {                               //Left
-            setX(-30);
-            side = true;
-        }
-        else if (getY() + 80 >= game.getHeight()) {             //Down
-            setY(game.getHeight() - 80);
-            floor = true;
-        }
+    }
+    
+    
+    // Este método se activa cuando el camión explota
+    public void explotar(){
+        setX(-50);
+        setY(-50);
     }
     
     /**
@@ -132,7 +132,7 @@ public class Bad extends Item{
      * @return 
      */
     public Rectangle getPerimetro() {
-        return new Rectangle (getX(), getY(), getWidth(), getHeight()-30);
+        return new Rectangle (getX(), getY(), getWidth(), getHeight());
     }
     
     /**
