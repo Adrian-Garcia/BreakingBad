@@ -141,6 +141,6 @@ public class Bad extends Item{
      */
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.pokeball, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(Assets.camion, getX(), getY(), getWidth(), getHeight(), null);
     }
 }

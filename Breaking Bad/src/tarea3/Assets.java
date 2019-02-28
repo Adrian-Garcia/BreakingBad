@@ -13,11 +13,9 @@ import java.awt.image.BufferedImage;
  */
 public class Assets {
     public static BufferedImage background; // to store background image
-    public static BufferedImage player;     // to store the player image
-    public static BufferedImage bad;        // to store the bad image
-    public static BufferedImage pokeball;   // to store the pokemon image
-    public static BufferedImage pikachu;   // to store proyectil image
-    public static BufferedImage box;        // to store collision sprite
+    public static BufferedImage proyectil;     // to store the player image
+    public static BufferedImage camion;        // to store the bad image
+    public static BufferedImage barra;   // to store the pokemon image
     public static SoundClip bomb;           // to store the sound of fall
     public static SoundClip coin;           // to store the sound of catch
 
@@ -26,11 +24,9 @@ public class Assets {
      */
     public static void init() {
         background = ImageLoader.loadImage("/images/Background.png");
-        player = ImageLoader.loadImage("/images/Squirtle.png");
-        bad = ImageLoader.loadImage("/images/pikachu.png");
-        pokeball = ImageLoader.loadImage("/images/pokeball.png");
-        pikachu = ImageLoader.loadImage("/images/pikachu.png");
-        box = ImageLoader.loadImage("/images/Empty.png");
+        proyectil = ImageLoader.loadImage("/images/pikachu.png");
+        camion = ImageLoader.loadImage("/images/pokeball.png");
+        barra = ImageLoader.loadImage("/images/Squirtle.png");
 //        box = ImageLoader.loadImage("/images/box.png");
         bomb = new SoundClip("/sounds/Metal.wav");
         coin = new SoundClip("/sounds/Coin.wav");

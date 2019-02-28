@@ -7,6 +7,7 @@ package tarea3;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -77,19 +78,11 @@ public class Player extends Item{
     public void tick() {
         
         // moving player depending on flags
-        if (game.getKeyManager().left) {
+        if (game.getKeyManager().left && getX()>=0) {
            setX(getX() - speed);
         }
-        if (game.getKeyManager().right) {
+        if (game.getKeyManager().right && getX()+getWidth()<=game.getWidth()) {
            setX(getX() + speed);
-        }
-        
-        // reset x position and y position if colision
-        if (getX() + getWidth() >= game.getWidth()) {
-            setX(game.getWidth() - 10);
-        }
-        else if (getX() <= 0) {
-            setX(10);
         }
     }
     
@@ -112,6 +105,15 @@ public class Player extends Item{
                                                                 //Castea
         return obj instanceof Bad && getPerimetro().intersects(((Bad) obj).getPerimetro());
     }
+    
+    public Rectangle2D[] getBordes(){
+        Rectangle2D[] bordes = new Rectangle2D[4];
+        bordes[0] = new Rectangle2D.Double(getX()+getWidth(),getY(),1,getHeight());
+        bordes[1] = new Rectangle2D.Double(getX(),getY()-1,getWidth(),1);
+        bordes[2] = new Rectangle2D.Double(getX()-1,getY(),1,getHeight());
+        bordes[3] = new Rectangle2D.Double(getX(),getY()+getHeight(),getWidth(),1);
+        return bordes;
+    }
 
     /**
      * render the image of the player 
@@ -119,6 +121,6 @@ public class Player extends Item{
      */
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(Assets.barra, getX(), getY(), getWidth(), getHeight(), null);
     }
 }

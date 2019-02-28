@@ -29,6 +29,7 @@ public class Game implements Runnable {
     private LinkedList<Bad> camiones;   // the ammount of blocks to destroy
     private KeyManager keyManager;      // to manage the keyboard
     private MouseManager mouseManager;  // to manage the mouse
+    private int vidas;                  // oportunidades de que la bola caiga
 
     /**
      * to create title, width and height and set the game is still not running
@@ -44,6 +45,28 @@ public class Game implements Runnable {
         running = false;
         keyManager = new KeyManager();
         mouseManager = new MouseManager();
+        vidas = 5;
+    }
+    
+    /**
+     * initializing the display window of the game
+     */
+    private void init() {
+        display = new Display(title, getWidth(), getHeight());
+        Assets.init();
+        player = new Player(0, getHeight() - 30, 1, 200, 20, this);
+        proyectil = new Proyectil(50,350,DiagDirection.UPRIGHT,50,50,this);
+        
+        // creando nuestros camiones
+        camiones = new LinkedList<Bad>();
+        int camWidth = 100;
+        int camHeight = 50;
+        for (int i = 1; i <= 50; i++) {
+            int iPosX = (camWidth*i)%getWidth();
+            int iPosY = camHeight*((camHeight*i)/getWidth());
+            camiones.add(new Bad(iPosX, iPosY, 1, camWidth, camHeight, this));
+        }
+        display.getJframe().addKeyListener(keyManager);
     }
 
     /**
@@ -82,25 +105,8 @@ public class Game implements Runnable {
         return paredes;
     }
     
-    /**
-     * initializing the display window of the game
-     */
-    private void init() {
-        display = new Display(title, getWidth(), getHeight());
-        Assets.init();
-        player = new Player(0, getHeight() - 100, 1, 100, 100, this);
-        proyectil = new Proyectil(50,350,DiagDirection.UPRIGHT,50,50,this);
-        
-        // creando nuestros camiones
-        camiones = new LinkedList<Bad>();
-        int camWidth = 100;
-        int camHeight = 50;
-        for (int i = 1; i <= 50; i++) {
-            int iPosX = (camWidth*i)%getWidth();
-            int iPosY = camHeight*((camHeight*i)/getWidth());
-            camiones.add(new Bad(iPosX, iPosY, 1, camWidth, camHeight, this));
-        }
-        display.getJframe().addKeyListener(keyManager);
+    public Player getPlayer(){
+        return player;
     }
 
     /**
@@ -152,6 +158,14 @@ public class Game implements Runnable {
     public MouseManager getMouseManager() {
         return mouseManager;
     }
+    
+    public int getVidas(){
+        return vidas;
+    }
+    
+    public void setVidas(int vidas){
+        this.vidas = vidas;
+    }
 
     /**
      * Control movement of all instances of the game
@@ -194,8 +208,29 @@ public class Game implements Runnable {
             }
         }
         
-        proyectil.tick();
+        if(proyectil.getShape().intersects(player.getPerimetro())){
+            Rectangle2D[] bordes = player.getBordes();
+            for(int i=0; i<bordes.length; i++){
+                if(proyectil.getShape().intersects(bordes[i])){
+                    switch(i){
+                        case 2:
+                            proyectil.chocar(RectDirection.RIGHT);
+                            break;
+                        case 3:
+                            proyectil.chocar(RectDirection.UP);
+                            break;
+                        case 0:
+                            proyectil.chocar(RectDirection.LEFT);
+                            break;
+                        case 1:
+                            proyectil.chocar(RectDirection.DOWN);
+                            break;
+                    }
+                }
+            }
+        }
         
+        proyectil.tick();
         
     }
 

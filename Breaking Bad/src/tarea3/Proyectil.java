@@ -22,6 +22,7 @@ public class Proyectil extends Item{
     private int height;
     private Game game;
     private int speed;
+    private int stun;
     
     /**
      * Bad constructor
@@ -39,6 +40,7 @@ public class Proyectil extends Item{
         this.game = game;
         this.direction = direction;
         this.speed = 15;
+        this.stun = 0;
     }
 
     /**
@@ -88,6 +90,14 @@ public class Proyectil extends Item{
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    
+    public int getStun(){
+        return stun;
+    }
+    
+    public void setStun(int stun){
+        this.stun = stun;
+    }
 
     /**
      * Control bad movement
@@ -95,23 +105,27 @@ public class Proyectil extends Item{
     @Override
     public void tick() {
         
-        switch(direction){
-            case UPRIGHT:
-                setX(getX()+speed);
-                setY(getY()-speed);
-                break;
-            case UPLEFT:
-                setX(getX()-speed);
-                setY(getY()-speed);
-                break;
-            case DOWNLEFT:
-                setX(getX()-speed);
-                setY(getY()+speed);
-                break;
-            case DOWNRIGHT:
-                setX(getX()+speed);
-                setY(getY()+speed);
-                break;
+        if(stun <= 0){
+            switch(direction){
+                case UPRIGHT:
+                    setX(getX()+speed);
+                    setY(getY()-speed);
+                    break;
+                case UPLEFT:
+                    setX(getX()-speed);
+                    setY(getY()-speed);
+                    break;
+                case DOWNLEFT:
+                    setX(getX()-speed);
+                    setY(getY()+speed);
+                    break;
+                case DOWNRIGHT:
+                    setX(getX()+speed);
+                    setY(getY()+speed);
+                    break;
+            }
+        } else {
+            stun -= 1;
         }
         
         Rectangle2D[] paredes = game.getParedes();
@@ -140,11 +154,12 @@ public class Proyectil extends Item{
                         }
                         break;
                     case 3:
-                        if(direction == DiagDirection.DOWNLEFT){
-                            direction = DiagDirection.UPLEFT;
-                        } else if(direction == DiagDirection.DOWNRIGHT){
-                            direction = DiagDirection.UPRIGHT;
-                        }
+                        // Finalizar el juego
+                        game.setVidas(game.getVidas()-1);
+                        x = game.getPlayer().getX() + game.getPlayer().getWidth()/2;
+                        y = game.getPlayer().getY() - 30;
+                        direction = DiagDirection.UPRIGHT;
+                        stun = 100;
                         break;
                 }
             }
@@ -199,7 +214,7 @@ public class Proyectil extends Item{
      */
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.pikachu, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(Assets.proyectil, getX(), getY(), getWidth(), getHeight(), null);
     }
     
 }
