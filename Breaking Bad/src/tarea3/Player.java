@@ -37,6 +37,7 @@ public class Player extends Item{
         this.height = height;
         this.game = game;
         this.speed = 9;
+        vidas = 5;
     }
 
     /**
@@ -69,6 +70,14 @@ public class Player extends Item{
      */
     public void setHeight(int height) {
         this.height = height;
+    }
+    
+    public int getVidas() {
+        return vidas;
+    }
+
+    public void setVidas(int vidas) {
+        this.vidas = vidas;
     }
 
     /**

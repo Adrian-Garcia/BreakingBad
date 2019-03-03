@@ -18,8 +18,11 @@ public class Assets {
     public static BufferedImage camion;        // to store the bad image
     public static BufferedImage barra;         // to store the pokemon image
     public static BufferedImage box;           // to store box image 
+    public static BufferedImage gameOver;      // to store image of gameOver
+    public static BufferedImage gameWin;      // to store image of gameOver
     public static SoundClip bomb;              // to store the sound of fall
     public static SoundClip coin;              // to store the sound of catch
+    
 
     /**
      * initializing the images of the game
@@ -29,6 +32,8 @@ public class Assets {
         camion = ImageLoader.loadImage("/images/Truck.png");         //Camion
         barra = ImageLoader.loadImage("/images/Paddle.png");          //Barra
         box = ImageLoader.loadImage("/images/box.png");
+        gameOver = ImageLoader.loadImage("/images/gameOver.jpg");
+        gameWin = ImageLoader.loadImage("/images/Win.jpg");
         bomb = new SoundClip("/sounds/Metal.wav");
         coin = new SoundClip("/sounds/Coin.wav");
         

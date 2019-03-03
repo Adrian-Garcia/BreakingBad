@@ -30,7 +30,12 @@ public class Game implements Runnable {
     private KeyManager keyManager;      // to manage the keyboard
     private MouseManager mouseManager;  // to manage the mouse
     private int vidas;                  // oportunidades de que la bola caiga
-
+    private int noTrucks;               // to store number of trucks
+    public int Trucks;                  // to store trucks
+    public boolean win = false;         // to send a win message
+    public boolean pause = false;       // to pause the game
+    public int count = 0;             // to count at end game
+    
     /**
      * to create title, width and height and set the game is still not running
      *
@@ -46,6 +51,7 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
         mouseManager = new MouseManager();
         vidas = 5;
+        noTrucks = 50;
     }
     
     /**
@@ -107,6 +113,14 @@ public class Game implements Runnable {
     
     public Player getPlayer(){
         return player;
+    }
+    
+    public int getNoTrucks() {
+        return noTrucks;
+    }
+    
+    public void setNoTrucks(int noTrucks) {
+        this.noTrucks = noTrucks;
     }
 
     /**
@@ -171,20 +185,53 @@ public class Game implements Runnable {
      * Control movement of all instances of the game
      */
     private void tick() {
+        
+        if (getKeyManager().p) {
+            pause = false;
+        }
+        
         keyManager.tick();
         // avancing player and bad with walls collision
         player.tick();
         
-        // tickeando los camiones para animarlos
+        display.getJframe().setTitle("Lives: " + getVidas() + "     Camiones: " + getNoTrucks());
         
-        for(Bad camion : camiones){
-            camion.tick();
-            
-            // revisemos que este camion no esté colisionando con nuestro proyectil
-            if(proyectil.getShape().intersects(camion.getPerimetro())){
-                // hay una colisión, ¿qué hacemos?
-                
-                Rectangle2D[] bordes = camion.getBordes();
+        //Game is not paused
+        if (!pause) {
+            // tickeando los camiones para animarlos
+            for(Bad camion : camiones){
+                camion.tick();
+
+                // revisemos que este camion no esté colisionando con nuestro proyectil
+                if(proyectil.getShape().intersects(camion.getPerimetro())){
+                    // hay una colisión, ¿qué hacemos?
+                    setNoTrucks(getNoTrucks()-1);
+                    Rectangle2D[] bordes = camion.getBordes();
+                    for(int i=0; i<bordes.length; i++){
+                        if(proyectil.getShape().intersects(bordes[i])){
+                            switch(i){
+                                case 2:
+                                    proyectil.chocar(RectDirection.RIGHT);
+                                    break;
+                                case 3:
+                                    proyectil.chocar(RectDirection.UP);
+                                    break;
+                                case 0:
+                                    proyectil.chocar(RectDirection.LEFT);
+                                    break;
+                                case 1:
+                                    proyectil.chocar(RectDirection.DOWN);
+                                    break;
+                            }
+                        }
+                    }
+
+                    camion.explotar();
+                }
+            }
+
+            if(proyectil.getShape().intersects(player.getPerimetro())){
+                Rectangle2D[] bordes = player.getBordes();
                 for(int i=0; i<bordes.length; i++){
                     if(proyectil.getShape().intersects(bordes[i])){
                         switch(i){
@@ -203,35 +250,16 @@ public class Game implements Runnable {
                         }
                     }
                 }
-                
-                camion.explotar();
             }
+
+            proyectil.tick();
         }
         
-        if(proyectil.getShape().intersects(player.getPerimetro())){
-            Rectangle2D[] bordes = player.getBordes();
-            for(int i=0; i<bordes.length; i++){
-                if(proyectil.getShape().intersects(bordes[i])){
-                    switch(i){
-                        case 2:
-                            proyectil.chocar(RectDirection.RIGHT);
-                            break;
-                        case 3:
-                            proyectil.chocar(RectDirection.UP);
-                            break;
-                        case 0:
-                            proyectil.chocar(RectDirection.LEFT);
-                            break;
-                        case 1:
-                            proyectil.chocar(RectDirection.DOWN);
-                            break;
-                    }
-                }
-            }
+        else {
+            if (getKeyManager().p) {
+                pause = false;
+            }    
         }
-        
-        proyectil.tick();
-        
     }
 
     /**
@@ -249,18 +277,72 @@ public class Game implements Runnable {
         if (bs == null) {
             display.getCanvas().createBufferStrategy(3);
         } else {
-            g = bs.getDrawGraphics();
-            g.drawImage(Assets.background, 0, 0, width, height, null);
-            player.render(g);
-
-            for(Bad camion : camiones){
-                camion.render(g);
-            }
             
-            proyectil.render(g);
+            //Game not pause
+            if (pause == false) {
+                g = bs.getDrawGraphics();
 
+                if (getNoTrucks() == 0 && getVidas() > 0) {
+                    g.drawImage(Assets.gameWin, 0, 0, width, height, null);
+                    bs.show();
+                    g.dispose(); 
+                    win = true;
+                    
+                    count++;
+                    
+                    if(count == 100) {
+                        vidas = 6;
+                        noTrucks = 50;
+                        count = 0;
+                        init();
+                    }
+                }
+
+                else if (getVidas() > 0) {
+
+                    g.drawImage(Assets.background, 0, 0, width, height, null);
+                    player.render(g);
+
+                    for(Bad camion : camiones){
+                        camion.render(g);
+                    }
+
+                    proyectil.render(g);
+
+                    bs.show();
+                    g.dispose();
+                }
+                else {
+                    if (!win) {
+                        g.drawImage(Assets.gameOver, 0, 0, width, height, null);
+                        bs.show();
+                        g.dispose();
+                        
+                        count++;
+
+                        if(count == 100) { 
+                            vidas = 6;
+                            noTrucks = 50;
+                            count = 0;
+                            init();
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (getNoTrucks() <= 0) {
+//            setNoTrucks(50);
+            g.drawImage(Assets.gameOver, 0, 0, width, height, null);
             bs.show();
             g.dispose();
+            
+            int i=0;
+            while (i < 100) {
+                
+                i++;
+            } 
+//            init();
         }
 
     }
