@@ -54,7 +54,7 @@ public class Game implements Runnable {
     private void init() {
         display = new Display(title, getWidth(), getHeight());
         Assets.init();
-        player = new Player(0, getHeight() - 30, 1, 200, 20, this);
+        player = new Player(0, getHeight() - 30, 1, 150, 20, this);
         proyectil = new Proyectil(50,350,DiagDirection.UPRIGHT,50,50,this);
         
         // creando nuestros camiones

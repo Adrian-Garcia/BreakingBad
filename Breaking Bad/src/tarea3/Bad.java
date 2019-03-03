@@ -19,7 +19,7 @@ public class Bad extends Item{
     private int width;
     private int height;
     private Game game;
-    private int speed = 3;
+    private int speed = 2;
     public boolean floor = false;
     public boolean side = false;
     

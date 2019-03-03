@@ -23,6 +23,7 @@ public class Proyectil extends Item{
     private Game game;
     private int speed;
     private int stun;
+    private Animation animation;    // to store the animation of the ball
     
     /**
      * Bad constructor
@@ -41,6 +42,9 @@ public class Proyectil extends Item{
         this.direction = direction;
         this.speed = 15;
         this.stun = 0;
+        
+        this.animation = new Animation(Assets.proyectil, 100);
+        
     }
 
     /**
@@ -104,6 +108,8 @@ public class Proyectil extends Item{
      */
     @Override
     public void tick() {
+        
+        this.animation.tick();
         
         if(stun <= 0){
             switch(direction){
@@ -214,7 +220,6 @@ public class Proyectil extends Item{
      */
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.proyectil, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(animation.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
     }
-    
 }
