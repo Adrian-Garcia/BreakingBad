@@ -21,6 +21,7 @@ public class Player extends Item{
     private int speed;
     private int vidas;
     private int score = 0;
+    private boolean pause = false; 
     
     /**
      * Player constructor
@@ -80,12 +81,23 @@ public class Player extends Item{
         this.vidas = vidas;
     }
 
+    public boolean getPause() {
+        return pause;
+    }
+    
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+    
     /**
      * Control the player movement 
      */
     @Override
     public void tick() {
         
+        if (game.pause)
+            return;
+            
         // moving player depending on flags
         if (game.getKeyManager().left && getX()>=0) {
            setX(getX() - speed);

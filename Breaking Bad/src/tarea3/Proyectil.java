@@ -24,6 +24,7 @@ public class Proyectil extends Item{
     private int speed;
     private int stun;
     private Animation animation;    // to store the animation of the ball
+    private boolean pause = false;  
     
     /**
      * Bad constructor
@@ -42,7 +43,6 @@ public class Proyectil extends Item{
         this.direction = direction;
         this.speed = 15;
         this.stun = 0;
-        
         this.animation = new Animation(Assets.proyectil, 100);
         
     }
@@ -95,19 +95,47 @@ public class Proyectil extends Item{
         this.speed = speed;
     }
     
+    /**
+     * Getter of Stun
+     * @return stun
+     */
     public int getStun(){
         return stun;
     }
     
+    /**
+     * Setter of stun
+     * @param stun 
+     */
     public void setStun(int stun){
         this.stun = stun;
     }
+    
+    
+    /**
+     * Getter for pause
+     * @return pause 
+     */
+    public boolean getPause() {
+        return pause;
+    }
 
+    /**
+     * Setter for pause
+     * @param pause 
+     */
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+    
     /**
      * Control bad movement
      */
     @Override
     public void tick() {
+        
+        if (game.pause)
+            return;
         
         this.animation.tick();
         
