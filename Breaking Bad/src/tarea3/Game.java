@@ -8,7 +8,18 @@ package tarea3;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -35,6 +46,8 @@ public class Game implements Runnable {
     public boolean win = false;         // to send a win message
     public boolean pause;               // to pause the game
     public int count = 0;               // to count at end game
+    public int pauseStun = 0;           // to pause
+    private String nombreArchivo = "partida.sf";
     
     /**
      * to create title, width and height and set the game is still not running
@@ -189,8 +202,33 @@ public class Game implements Runnable {
         
         keyManager.tick();
         
+        if(pauseStun>0){
+            pauseStun--;
+        }
+        
         if (getKeyManager().p) {
-            pause = (pause) ? true : false; 
+            if(pauseStun<=0){
+                pause = !pause;
+                pauseStun = 30;
+            }
+        }
+        
+        if (getKeyManager().g) {
+            try {
+                grabarArchivo();
+            } catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        
+        if (getKeyManager().c) {
+            try {
+                leeArchivo();
+            } catch (IOException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
         
         // avancing player and bad with walls collision
@@ -275,7 +313,7 @@ public class Game implements Runnable {
             
             g = bs.getDrawGraphics();
 
-            if (getNoTrucks() == 0 && getVidas() > 0) {
+            if (getNoTrucks()==0 && getVidas()>0) {
                 g.drawImage(Assets.gameWin, 0, 0, width, height, null);
                 bs.show();
                 g.dispose(); 
@@ -285,7 +323,7 @@ public class Game implements Runnable {
 
                 if(count == 100) {
                     vidas = 6;
-                    noTrucks = 50;
+                    noTrucks = camiones.size();
                     count = 0;
                     win = false;
                     init();
@@ -306,21 +344,19 @@ public class Game implements Runnable {
                 bs.show();
                 g.dispose();
             }
-            else {
-                if (!win) {
-                    g.drawImage(Assets.gameOver, 0, 0, width, height, null);
-                    bs.show();
-                    g.dispose();
+            else if (!win){
+                g.drawImage(Assets.gameOver, 0, 0, width, height, null);
+                bs.show();
+                g.dispose();
 
-                    count++;
+                count++;
 
-                    if(count == 100) { 
-                        vidas = 6;
-                        noTrucks = 50;
-                        count = 0;
-                        win = false;
-                        init();
-                    }
+                if(count == 100) { 
+                    vidas = 6;
+                    noTrucks = 50;
+                    count = 0;
+                    win = false;
+                    init();
                 }
             }
         }
@@ -363,6 +399,52 @@ public class Game implements Runnable {
                 ie.printStackTrace();
             }
         }
+    }
+    
+    public String toString(){
+        return (title+" "+width+" "+height+" "+vidas+" "+noTrucks+" "+Trucks+" "+count);
+    }
+    
+    public void loadFromString(String[] datos){
+        this.title = datos[0];
+        this.width = Integer.parseInt(datos[1]);
+        this.height = Integer.parseInt(datos[2]);
+        this.vidas = Integer.parseInt(datos[3]);
+        this.noTrucks = Integer.parseInt(datos[4]);
+        this.Trucks = Integer.parseInt(datos[5]);
+        this.count = Integer.parseInt(datos[6]);
+    }
+    
+    public void grabarArchivo() throws IOException {
+        PrintWriter fileOut = new PrintWriter(new FileWriter(nombreArchivo));
+        fileOut.println(this.toString());
+        fileOut.println(player.toString());
+        fileOut.println(proyectil.toString());
+        for(Bad camion : camiones){
+            fileOut.println(camion.toString());
+        }
+        fileOut.close();
+    }
+    
+    public void leeArchivo() throws IOException {
+                                                          
+        BufferedReader fileIn;
+        try {
+            fileIn = new BufferedReader(new FileReader(nombreArchivo));
+        } catch (FileNotFoundException e){
+            File archivo = new File(nombreArchivo);
+            PrintWriter fileOut = new PrintWriter(archivo);
+            fileOut.println("100,demo");
+            fileOut.close();
+            fileIn = new BufferedReader(new FileReader(nombreArchivo));
+        }
+        loadFromString(fileIn.readLine().split("\\s+"));
+        this.player.loadFromString(fileIn.readLine().split("\\s+"));
+        this.proyectil.loadFromString(fileIn.readLine().split("\\s+"));
+        for(Bad camion : camiones){
+            camion.loadFromString(fileIn.readLine().split("\\s+"));
+        }
+        fileIn.close();
     }
     
 }

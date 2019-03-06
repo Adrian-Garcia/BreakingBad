@@ -135,6 +135,19 @@ public class Player extends Item{
         bordes[3] = new Rectangle2D.Double(getX(),getY()+getHeight(),getWidth(),1);
         return bordes;
     }
+    
+    public String toString() {
+        return (x+" "+y+" "+width + " " + height + " " + speed + " " + vidas);
+    }
+    
+    public void loadFromString(String[] datos) {
+        this.x = Integer.parseInt(datos[0]);
+        this.y = Integer.parseInt(datos[1]);
+        this.width = Integer.parseInt(datos[2]);
+        this.height = Integer.parseInt(datos[3]);
+        this.speed = Integer.parseInt(datos[4]);
+        this.vidas = Integer.parseInt(datos[5]);
+    }
 
     /**
      * render the image of the player 

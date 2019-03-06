@@ -27,7 +27,7 @@ public class Proyectil extends Item{
     private boolean pause = false;  
     
     /**
-     * Bad constructor
+     * Proyectil constructor
      * @param x
      * @param y
      * @param direction
@@ -44,7 +44,6 @@ public class Proyectil extends Item{
         this.speed = 15;
         this.stun = 0;
         this.animation = new Animation(Assets.proyectil, 100);
-        
     }
 
     /**
@@ -232,6 +231,18 @@ public class Proyectil extends Item{
                 }
                 break;
         }
+    }
+    
+    public String toString(){
+        return (x+" "+y+" "+width+" "+height+" "+speed);
+    }
+    
+    public void loadFromString(String[] datos) {
+        this.x = Integer.parseInt(datos[0]);
+        this.y = Integer.parseInt(datos[1]);
+        this.width = Integer.parseInt(datos[2]);
+        this.height = Integer.parseInt(datos[3]);
+        this.speed = Integer.parseInt(datos[4]);
     }
     
     /**

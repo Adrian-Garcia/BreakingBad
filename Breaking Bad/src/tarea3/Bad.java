@@ -19,7 +19,6 @@ public class Bad extends Item{
     private int width;
     private int height;
     private Game game;
-    private int speed = 2;
     public boolean floor = false;
     public boolean side = false;
     
@@ -39,14 +38,6 @@ public class Bad extends Item{
         this.height = height;
         this.game = game;
     }
-    
-    /**
-     * Getter of direction
-     * @return direction
-     */
-    public int getDirection() {
-        return direction;
-    }
 
     /**
      * Getter of width
@@ -63,22 +54,6 @@ public class Bad extends Item{
     public int getHeight() {
         return height;
     }
-    
-    /**
-     * Getter of Speed
-     * @return speed
-     */
-    public int getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Setter of direction
-     * @param direction 
-     */
-    public void setDirection(int direction) {
-        this.direction = direction;
-    }
 
     /**
      * Setter of Width
@@ -94,14 +69,6 @@ public class Bad extends Item{
      */
     public void setHeight(int height) {
         this.height = height;
-    }
-    
-    /**
-     * Setter of speed
-     * @param speed 
-     */
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
     
     public Rectangle2D[] getBordes(){
@@ -125,6 +92,17 @@ public class Bad extends Item{
     public void explotar(){
         setX(-50);
         setY(-50);
+    }
+    
+    public String toString(){
+        return (x+" "+y+" "+width+" "+height);
+    }
+    
+    public void loadFromString(String[] datos) {
+        this.x = Integer.parseInt(datos[0]);
+        this.y = Integer.parseInt(datos[1]);
+        this.width = Integer.parseInt(datos[2]);
+        this.height = Integer.parseInt(datos[3]);
     }
     
     /**
