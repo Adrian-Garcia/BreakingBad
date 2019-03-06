@@ -391,10 +391,12 @@ public class Game implements Runnable {
         }
     }
     
+    // Guarda la información del objeto en un string
     public String toString(){
         return (title+" "+width+" "+height+" "+vidas+" "+noTrucks+" "+Trucks);
     }
     
+    // Carga la información del objeto desde un string
     public void loadFromString(String[] datos){
         this.title = datos[0];
         this.width = Integer.parseInt(datos[1]);
@@ -404,6 +406,7 @@ public class Game implements Runnable {
         this.Trucks = Integer.parseInt(datos[5]);
     }
     
+    // Se encarga de guardar en un archivo toda la informacion de nuestra partida
     public void grabarArchivo() throws IOException {
         PrintWriter fileOut = new PrintWriter(new FileWriter(nombreArchivo));
         fileOut.println(this.toString());
@@ -415,6 +418,7 @@ public class Game implements Runnable {
         fileOut.close();
     }
     
+    // Lee toda la información que guardamos sobre la partida y la carga
     public void leeArchivo() throws IOException {
                                                           
         BufferedReader fileIn;

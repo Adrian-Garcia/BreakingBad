@@ -136,10 +136,12 @@ public class Player extends Item{
         return bordes;
     }
     
+    // Guarda la información del objeto en un string
     public String toString() {
         return (x+" "+y+" "+width + " " + height + " " + speed + " " + vidas);
     }
     
+    // Se encarga de guardar en un archivo toda la informacion de nuestra partida
     public void loadFromString(String[] datos) {
         this.x = Integer.parseInt(datos[0]);
         this.y = Integer.parseInt(datos[1]);
