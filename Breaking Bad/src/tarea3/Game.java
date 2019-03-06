@@ -43,7 +43,7 @@ public class Game implements Runnable {
     private int vidas;                  // oportunidades de que la bola caiga
     private int noTrucks;               // to store number of trucks
     public int Trucks;                  // to store trucks
-    public boolean win = false;         // to send a win message
+    public boolean finished;            // to start the game over
     public boolean pause;               // to pause the game
     public int pauseStun = 0;           // to pause
     private String nombreArchivo = "partida.sf";
@@ -62,8 +62,6 @@ public class Game implements Runnable {
         running = false;
         keyManager = new KeyManager();
         mouseManager = new MouseManager();
-        vidas = 5;
-        noTrucks = 50;
     }
     
     /**
@@ -75,6 +73,11 @@ public class Game implements Runnable {
         player = new Player(0, getHeight() - 30, 1, 150, 20, this);
         proyectil = new Proyectil(50,350,DiagDirection.UPRIGHT,50,50,this);
         pause = false;
+        finished = false;
+        vidas = 5;
+        noTrucks = 50;
+        
+        System.out.println("Wenas");
         
         // creando nuestros camiones
         camiones = new LinkedList<Bad>();
@@ -120,7 +123,7 @@ public class Game implements Runnable {
         paredes[0] = new Rectangle2D.Double(getWidth()-padding,padding,padding,getHeight()-2*padding);
         paredes[1] = new Rectangle2D.Double(padding,0,getWidth()-2*padding,padding);
         paredes[2] = new Rectangle2D.Double(0,padding,padding,getHeight()-2*padding);
-        paredes[3] = new Rectangle2D.Double(padding,getHeight()-padding,getWidth()-2*padding,padding);
+        paredes[3] = new Rectangle2D.Double(padding,getHeight()-padding+60,getWidth()-2*padding,padding);
         return paredes;
     }
     
@@ -201,6 +204,26 @@ public class Game implements Runnable {
         
         keyManager.tick();
         
+        if (finished) {
+            if (getKeyManager().n) {
+                this.init();
+            }
+            if (getKeyManager().c) {
+                finished = false;
+                try {
+                    leeArchivo();
+                } catch (IOException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                pause = true;
+            }
+            return;
+        }
+        
+        if (noTrucks<=0 || vidas<=0) {
+            finished = true;
+        }
+        
         if(pauseStun>0){
             pauseStun--;
         }
@@ -227,7 +250,7 @@ public class Game implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+            pause = true;
         }
         
         // avancing player and bad with walls collision
@@ -308,61 +331,27 @@ public class Game implements Runnable {
         } else {
             
             g = bs.getDrawGraphics();
-
-            if (getNoTrucks()==0 && getVidas()>0) {
-                g.drawImage(Assets.gameWin, 0, 0, width, height, null);
-                bs.show();
-                g.dispose(); 
-                win = true;
-
-                if(getKeyManager().n) {
-                    vidas = 6;
-                    noTrucks = camiones.size();
-                    win = false;
-                    init();
+            
+            if (finished) {
+                if (noTrucks<=0) {
+                    // Significa que ganamos
+                    g.drawImage(Assets.gameWin, 0, 0, width, height, null);
+                } else {
+                    // Significa que perdimos
+                    g.drawImage(Assets.gameOver, 0, 0, width, height, null);
                 }
-            }
-
-            else if (getVidas() > 0) {
-
+            }  else {
                 g.drawImage(Assets.background, 0, 0, width, height, null);
                 player.render(g);
-
                 for(Bad camion : camiones){
                     camion.render(g);
                 }
-
                 proyectil.render(g);
-
-                bs.show();
-                g.dispose();
             }
-            else if (!win){
-                g.drawImage(Assets.gameOver, 0, 0, width, height, null);
-                bs.show();
-                g.dispose();
-
-                if(getKeyManager().n) { 
-                    vidas = 6;
-                    noTrucks = 50;
-                    win = false;
-                    init();
-                }
-            }
-        }
-        
-        if (getNoTrucks() <= 0) {
-            g.drawImage(Assets.gameOver, 0, 0, width, height, null);
+            
             bs.show();
             g.dispose();
-            
-            int i=0;
-            while (i < 100) {
-                
-                i++;
-            } 
         }
-
     }
 
     /**

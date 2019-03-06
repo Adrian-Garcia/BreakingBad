@@ -190,9 +190,9 @@ public class Proyectil extends Item{
                         // Finalizar el juego
                         game.setVidas(game.getVidas()-1);
                         x = game.getPlayer().getX() + game.getPlayer().getWidth()/2;
-                        y = game.getPlayer().getY() - 30;
+                        y = game.getPlayer().getY() - 50;
                         direction = DiagDirection.UPRIGHT;
-                        stun = 100;
+                        stun = 50;
                         break;
                 }
             }
