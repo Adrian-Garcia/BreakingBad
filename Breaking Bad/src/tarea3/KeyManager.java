@@ -19,6 +19,7 @@ public class KeyManager implements KeyListener {
     public boolean p;       // flag to pause the game
     public boolean g;       // flag to save the game
     public boolean c;       // flag to load the game
+    public boolean n;       // flag to restart the game
 
     private boolean keys[];  // to store all the flags for every key
     
@@ -51,5 +52,6 @@ public class KeyManager implements KeyListener {
         p = keys[KeyEvent.VK_P]||keys[KeyEvent.VK_ENTER]||keys[KeyEvent.VK_SPACE];
         g = keys[KeyEvent.VK_G];
         c = keys[KeyEvent.VK_C];
+        n = keys[KeyEvent.VK_N];
     }
 }

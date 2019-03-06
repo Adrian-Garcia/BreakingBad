@@ -45,7 +45,6 @@ public class Game implements Runnable {
     public int Trucks;                  // to store trucks
     public boolean win = false;         // to send a win message
     public boolean pause;               // to pause the game
-    public int count = 0;               // to count at end game
     public int pauseStun = 0;           // to pause
     private String nombreArchivo = "partida.sf";
     
@@ -209,7 +208,7 @@ public class Game implements Runnable {
         if (getKeyManager().p) {
             if(pauseStun<=0){
                 pause = !pause;
-                pauseStun = 30;
+                pauseStun = 20;
             }
         }
         
@@ -290,9 +289,6 @@ public class Game implements Runnable {
         }
 
         proyectil.tick();
-        if (getKeyManager().p) {
-            pause = (pause) ? false : true;
-        }
     }
 
     /**
@@ -319,12 +315,9 @@ public class Game implements Runnable {
                 g.dispose(); 
                 win = true;
 
-                count++;
-
-                if(count == 100) {
+                if(getKeyManager().n) {
                     vidas = 6;
                     noTrucks = camiones.size();
-                    count = 0;
                     win = false;
                     init();
                 }
@@ -349,12 +342,9 @@ public class Game implements Runnable {
                 bs.show();
                 g.dispose();
 
-                count++;
-
-                if(count == 100) { 
+                if(getKeyManager().n) { 
                     vidas = 6;
                     noTrucks = 50;
-                    count = 0;
                     win = false;
                     init();
                 }
@@ -402,7 +392,7 @@ public class Game implements Runnable {
     }
     
     public String toString(){
-        return (title+" "+width+" "+height+" "+vidas+" "+noTrucks+" "+Trucks+" "+count);
+        return (title+" "+width+" "+height+" "+vidas+" "+noTrucks+" "+Trucks);
     }
     
     public void loadFromString(String[] datos){
@@ -412,7 +402,6 @@ public class Game implements Runnable {
         this.vidas = Integer.parseInt(datos[3]);
         this.noTrucks = Integer.parseInt(datos[4]);
         this.Trucks = Integer.parseInt(datos[5]);
-        this.count = Integer.parseInt(datos[6]);
     }
     
     public void grabarArchivo() throws IOException {
